@@ -1,3 +1,5 @@
+package com.chdorner.roboreader.persistence;
+
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
 
