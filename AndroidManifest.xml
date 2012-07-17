@@ -3,7 +3,9 @@
       package="com.chdorner.roboreader"
       android:versionCode="1"
       android:versionName="1.0">
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
+      <application android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:name=".RoboReaderApplication">
         <activity android:name="LibraryActivity"
                   android:label="@string/app_name">
             <intent-filter>
