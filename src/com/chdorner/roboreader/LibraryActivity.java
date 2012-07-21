@@ -57,6 +57,6 @@ public class LibraryActivity extends ListActivity implements ActionBar.OnNavigat
 
     Toast.makeText(context, "Importing book...", Toast.LENGTH_SHORT).show();
     RoboReaderApplication application = (RoboReaderApplication)getApplication();
-    new ImportEPUBTask(this, application.getDatabaseHelper()).execute(intent.getData());
+    new ImportEPUBTask(this).execute(intent.getData());
   }
 }

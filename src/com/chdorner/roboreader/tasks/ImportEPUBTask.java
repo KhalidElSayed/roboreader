@@ -33,17 +33,17 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   public static Integer STATE_ERROR = 1;
 
   private Context context = null;
-  private DatabaseHelper databaseHelper = null;
 
-  public ImportEPUBTask(Context context, DatabaseHelper databaseHelper) {
+  public ImportEPUBTask(Context context) {
     super();
 
     this.context = context;
-    this.databaseHelper = databaseHelper;
   }
 
   protected Integer doInBackground(Uri... uris) {
     try {
+      DatabaseHelper databaseHelper = new DatabaseHelper(context);
+
       Uri uri = uris[0];
 
       Book book = new Book();
@@ -58,6 +58,8 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
 
       Dao<Book, String> bookDao = databaseHelper.getBookDao();
       bookDao.create(book);
+
+      databaseHelper.close();
     } catch(IOException e) {
       Log.e(TAG, e.getMessage());
     } catch(SQLException e) {
