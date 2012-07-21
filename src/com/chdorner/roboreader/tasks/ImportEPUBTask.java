@@ -1,6 +1,9 @@
 package com.chdorner.roboreader.tasks;
 
-import com.chdorner.roboreader.util.MD5;
+import com.chdorner.roboreader.persistence.Book;
+import com.chdorner.roboreader.persistence.DatabaseHelper;
+
+import com.j256.ormlite.dao.Dao;
 
 import android.os.AsyncTask;
 import android.content.Context;
@@ -13,7 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
+import java.sql.SQLException;
 
 public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   private final static String TAG = "com.chdorner.roboreader.tasks.ImportBookTask";
@@ -22,18 +25,23 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   public static Integer STATE_ERROR = 1;
 
   private Context context = null;
+  private DatabaseHelper databaseHelper = null;
 
-  public ImportEPUBTask(Context context) {
+  public ImportEPUBTask(Context context, DatabaseHelper databaseHelper) {
     super();
 
     this.context = context;
+    this.databaseHelper = databaseHelper;
   }
 
   protected Integer doInBackground(Uri... uris) {
     try {
       Uri uri = uris[0];
 
-      String fileName = MD5.hexdigest(uri.toString() + new Date().toString()) + ".epub";
+      Book book = new Book();
+      book.generateIdentifier(uri.toString());
+
+      String fileName = book.getIdentifier() + ".epub";
       File outputFile = new File(context.getExternalFilesDir(null), fileName);
       Log.d(TAG, "Writing to "+outputFile.getPath());
 
@@ -46,7 +54,12 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
 
       inputStream.close();
       outputStream.close();
+
+      Dao<Book, Integer> bookDao = databaseHelper.getBookDao();
+      bookDao.create(book);
     } catch(IOException e) {
+      Log.e(TAG, e.getMessage());
+    } catch(SQLException e) {
       Log.e(TAG, e.getMessage());
     }
     return STATE_OK;

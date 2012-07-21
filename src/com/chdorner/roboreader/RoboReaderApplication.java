@@ -15,5 +15,9 @@ public class RoboReaderApplication extends Application {
 
     this.databaseHelper = new DatabaseHelper(this);
   }
+
+  public DatabaseHelper getDatabaseHelper() {
+    return this.databaseHelper;
+  }
 }
 

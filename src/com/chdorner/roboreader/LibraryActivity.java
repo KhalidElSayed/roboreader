@@ -26,17 +26,18 @@ public class LibraryActivity extends Activity {
 
     Intent intent = getIntent();
     if("application/epub+zip".equals(getIntent().getType())) {
-      importBook(this, intent);
+      importEPUB(this, intent);
     }
   }
 
-  private void importBook(Context context, Intent intent) {
+  private void importEPUB(Context context, Intent intent) {
     if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
       Toast.makeText(context, "Cannot import Book at the moment", Toast.LENGTH_LONG).show();
       return;
     }
 
     Toast.makeText(context, "Importing book...", Toast.LENGTH_SHORT).show();
-    new ImportEPUBTask(this).execute(intent.getData());
+    RoboReaderApplication application = (RoboReaderApplication)getApplication();
+    new ImportEPUBTask(this, application.getDatabaseHelper()).execute(intent.getData());
   }
 }

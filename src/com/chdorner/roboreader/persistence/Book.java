@@ -1,7 +1,11 @@
 package com.chdorner.roboreader.persistence;
 
+import com.chdorner.roboreader.util.MD5;
+
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
+
+import java.util.Date;
 
 @DatabaseTable(tableName = "books")
 public class Book {
@@ -13,6 +17,17 @@ public class Book {
   private String author;
 
   public Book() {
+  }
+
+  public void generateIdentifier() {
+    generateIdentifier(null);
+  }
+
+  public void generateIdentifier(String salt) {
+    if(salt == null) {
+      salt = "";
+    }
+    this.identifier = MD5.hexdigest(salt + new Date().toString());
   }
 
   public String getIdentifier() {
