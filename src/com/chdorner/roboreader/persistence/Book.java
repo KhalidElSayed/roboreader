@@ -12,18 +12,25 @@ import java.util.Date;
 
 @DatabaseTable(tableName = "books")
 public class Book {
-  public static final Integer STATE_READING = 1;
-  public static final Integer STATE_FINISHED = 2;
-  public static final Integer STATE_ABANDONED = 3;
+  public static final int STATE_READING = 0;
+  public static final int STATE_FINISHED = 1;
+  public static final int STATE_ABANDONED = 2;
 
-  @DatabaseField(id = true)
+  @DatabaseField(id = true, columnName = "_id")
   private String identifier;
+  public static final String FIELD_IDENTIFIER = "identifier";
+
   @DatabaseField
   private String title;
+  public static final String FIELD_TITLE = "title";
+
   @DatabaseField
   private String author;
+  public static final String FIELD_AUTHOR = "author";
+
   @DatabaseField(canBeNull = false)
   private Integer state = STATE_READING;
+  public static final String FIELD_STATE = "state";
 
   public Book() {
   }
