@@ -93,9 +93,9 @@ public class LibraryActivity
 
   private void setupListView() {
     String[] fromColumns = {Book.FIELD_TITLE, Book.FIELD_AUTHOR};
-    int[] toViews = {android.R.id.text1, android.R.id.text2};
+    int[] toViews = {R.id.book_title, R.id.book_author};
     cursorAdapter = new SimpleCursorAdapter(this,
-        android.R.layout.simple_list_item_2,
+        R.layout.library_book_list_item,
         null,
         fromColumns,
         toViews,
