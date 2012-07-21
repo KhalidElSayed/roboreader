@@ -39,7 +39,7 @@ public class LibraryActivity
 
   private final String TAG = getClass().getName();
 
-  private SimpleCursorAdapter cursorAdapter;
+  private SimpleCursorAdapter mCursorAdapter;
 
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -65,11 +65,11 @@ public class LibraryActivity
   }
 
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    cursorAdapter.swapCursor(data);
+    mCursorAdapter.swapCursor(data);
   }
 
   public void onLoaderReset(Loader<Cursor> loader) {
-    cursorAdapter.swapCursor(null);
+    mCursorAdapter.swapCursor(null);
   }
 
   private void updateListViewData() {
@@ -94,13 +94,13 @@ public class LibraryActivity
   private void setupListView() {
     String[] fromColumns = {Book.FIELD_TITLE, Book.FIELD_AUTHOR};
     int[] toViews = {R.id.book_title, R.id.book_author};
-    cursorAdapter = new SimpleCursorAdapter(this,
+    mCursorAdapter = new SimpleCursorAdapter(this,
         R.layout.library_book_list_item,
         null,
         fromColumns,
         toViews,
         0);
-    setListAdapter(cursorAdapter);
+    setListAdapter(mCursorAdapter);
     getLoaderManager().initLoader(0, null, this);
   }
 

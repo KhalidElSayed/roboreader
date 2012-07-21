@@ -32,23 +32,23 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   public static Integer STATE_OK = 0;
   public static Integer STATE_ERROR = 1;
 
-  private Context context = null;
+  private Context mContext = null;
 
   public ImportEPUBTask(Context context) {
     super();
 
-    this.context = context;
+    this.mContext = context;
   }
 
   protected Integer doInBackground(Uri... uris) {
     try {
-      DatabaseHelper databaseHelper = new DatabaseHelper(context);
+      DatabaseHelper databaseHelper = new DatabaseHelper(mContext);
 
       Uri uri = uris[0];
 
       Book book = new Book();
       book.generateIdentifier(uri.toString());
-      File outputFile = book.getEPUBFile(context);
+      File outputFile = book.getEPUBFile(mContext);
 
       copyFile(uri, book, outputFile);
       Metadata metadata = getEPUBMetadata(outputFile);
@@ -71,7 +71,7 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   private void copyFile(Uri uri, Book book, File outputFile) throws IOException {
     Log.d(TAG, "Writing to "+outputFile.getPath());
 
-    InputStream inputStream = context.getContentResolver().openInputStream(uri);
+    InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
     OutputStream outputStream = new FileOutputStream(outputFile);
 
     byte[] data = new byte[inputStream.available()];

@@ -16,27 +16,26 @@ import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import java.sql.SQLException;
 
 public class LibraryBookCursorLoader extends SimpleCursorLoader {
-  private Context context;
-  private DatabaseHelper databaseHelper;
-  private int bookState;
+  private DatabaseHelper mDatabaseHelper;
+  private int mBookState;
 
   public LibraryBookCursorLoader(int bookState, Context context, DatabaseHelper helper) {
     super(context);
-    this.databaseHelper = helper;
-    this.bookState = bookState;
+    this.mDatabaseHelper = helper;
+    this.mBookState = bookState;
   }
 
   public Cursor loadInBackground() {
     Cursor cursor = null;
     try {
-      Dao<Book, String> bookDao = databaseHelper.getBookDao();
+      Dao<Book, String> bookDao = mDatabaseHelper.getBookDao();
 
       QueryBuilder<Book, String> queryBuilder = bookDao.queryBuilder();
-      queryBuilder.where().eq(Book.FIELD_STATE, bookState);
+      queryBuilder.where().eq(Book.FIELD_STATE, mBookState);
 
       PreparedQuery<Book> preparedQuery = queryBuilder.prepare();
 
-      AndroidCompiledStatement compiledStatement = (AndroidCompiledStatement)preparedQuery.compile(databaseHelper.getConnectionSource().getReadOnlyConnection(), StatementType.SELECT);
+      AndroidCompiledStatement compiledStatement = (AndroidCompiledStatement)preparedQuery.compile(mDatabaseHelper.getConnectionSource().getReadOnlyConnection(), StatementType.SELECT);
 
       cursor = compiledStatement.getCursor();
       cursor.getCount();
