@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <array name="book_states">
+    <item>@string/book_state_reading</item>
+    <item>@string/book_state_finished</item>
+    <item>@string/book_state_abandoned</item>
+  </array>
+</resources>
+
