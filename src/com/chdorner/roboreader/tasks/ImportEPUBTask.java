@@ -10,13 +10,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
+
+import nl.siegmann.epublib.epub.EpubReader;
+import nl.siegmann.epublib.domain.Metadata;
+import nl.siegmann.epublib.domain.Author;
 
 public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
   private final static String TAG = "com.chdorner.roboreader.tasks.ImportBookTask";
@@ -40,20 +48,13 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
 
       Book book = new Book();
       book.generateIdentifier(uri.toString());
+      File outputFile = book.getEPUBFile(context);
 
-      String fileName = book.getIdentifier() + ".epub";
-      File outputFile = new File(context.getExternalFilesDir(null), fileName);
-      Log.d(TAG, "Writing to "+outputFile.getPath());
+      copyFile(uri, book, outputFile);
+      Metadata metadata = getEPUBMetadata(outputFile);
 
-      InputStream inputStream = context.getContentResolver().openInputStream(uri);
-      OutputStream outputStream = new FileOutputStream(outputFile);
-
-      byte[] data = new byte[inputStream.available()];
-      inputStream.read(data);
-      outputStream.write(data);
-
-      inputStream.close();
-      outputStream.close();
+      book.setAuthor(buildAuthorString(metadata));
+      book.setTitle(buildTitleString(metadata));
 
       Dao<Book, String> bookDao = databaseHelper.getBookDao();
       bookDao.create(book);
@@ -63,6 +64,43 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
       Log.e(TAG, e.getMessage());
     }
     return STATE_OK;
+  }
+
+  private void copyFile(Uri uri, Book book, File outputFile) throws IOException {
+    Log.d(TAG, "Writing to "+outputFile.getPath());
+
+    InputStream inputStream = context.getContentResolver().openInputStream(uri);
+    OutputStream outputStream = new FileOutputStream(outputFile);
+
+    byte[] data = new byte[inputStream.available()];
+    inputStream.read(data);
+    outputStream.write(data);
+
+    inputStream.close();
+    outputStream.close();
+  }
+
+  private Metadata getEPUBMetadata(File outputFile) throws IOException {
+    InputStream inputStream = new FileInputStream(outputFile);
+    EpubReader reader = new EpubReader();
+    nl.siegmann.epublib.domain.Book epubBook = reader.readEpub(inputStream);
+
+    Metadata metadata = epubBook.getMetadata();
+    return metadata;
+  }
+
+  private String buildAuthorString(Metadata metadata) {
+    ArrayList<String> authors = new ArrayList<String>();
+    for(Author author : metadata.getAuthors()) {
+      String authorName = author.getFirstname() + " " + author.getLastname();
+      authors.add(authorName);
+    }
+
+    return TextUtils.join(", ", authors);
+  }
+
+  private String buildTitleString(Metadata metadata) {
+    return metadata.getTitles().get(0);
   }
 }
 

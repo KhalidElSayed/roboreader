@@ -5,6 +5,9 @@ import com.chdorner.roboreader.util.MD5;
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
 
+import android.content.Context;
+
+import java.io.File;
 import java.util.Date;
 
 @DatabaseTable(tableName = "books")
@@ -17,6 +20,11 @@ public class Book {
   private String author;
 
   public Book() {
+  }
+
+  public File getEPUBFile(Context context) {
+    String fileName = getIdentifier() + ".epub";
+    return new File(context.getExternalFilesDir(null), fileName);
   }
 
   public void generateIdentifier() {
