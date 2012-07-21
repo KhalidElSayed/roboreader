@@ -17,7 +17,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
   private static final String DATABASE_NAME = "roboreader.db";
   private static final int DATABASE_VERSION = 1;
 
-  private Dao<Book, Integer> bookDao = null;
+  private Dao<Book, String> bookDao = null;
 
   public DatabaseHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,7 +36,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     Log.d(TAG, "onUpgrade");
   }
 
-  public Dao<Book, Integer> getBookDao() throws SQLException {
+  public Dao<Book, String> getBookDao() throws SQLException {
     if(bookDao == null) {
       bookDao = getDao(Book.class);
     }

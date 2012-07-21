@@ -55,7 +55,7 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
       inputStream.close();
       outputStream.close();
 
-      Dao<Book, Integer> bookDao = databaseHelper.getBookDao();
+      Dao<Book, String> bookDao = databaseHelper.getBookDao();
       bookDao.create(book);
     } catch(IOException e) {
       Log.e(TAG, e.getMessage());
