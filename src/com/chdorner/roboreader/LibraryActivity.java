@@ -40,7 +40,8 @@ import java.sql.SQLException;
 public class LibraryActivity
   extends OrmLiteBaseListActivity<DatabaseHelper>
   implements ActionBar.OnNavigationListener, 
-             LoaderManager.LoaderCallbacks<Cursor> {
+             LoaderManager.LoaderCallbacks<Cursor>,
+             AdapterView.OnItemClickListener {
 
   private final String TAG = getClass().getName();
 
@@ -57,6 +58,12 @@ public class LibraryActivity
     if("application/epub+zip".equals(getIntent().getType())) {
       importEPUB(this, intent);
     }
+  }
+
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    SQLiteCursor cursor = (SQLiteCursor)parent.getAdapter().getItem(position);
+    String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
+    Log.d(TAG, "clicked on book id: " + book_id);
   }
 
   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -123,14 +130,7 @@ public class LibraryActivity
     setListAdapter(mCursorAdapter);
     getLoaderManager().initLoader(0, null, this);
 
-    getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SQLiteCursor cursor = (SQLiteCursor)parent.getAdapter().getItem(position);
-        String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
-        Log.d(TAG, "clicked on book id: " + book_id);
-      }
-    });
-
+    getListView().setOnItemClickListener(this);
     registerForContextMenu(getListView());
   }
 
