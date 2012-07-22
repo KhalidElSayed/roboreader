@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -40,8 +41,7 @@ import java.sql.SQLException;
 public class LibraryActivity
   extends OrmLiteBaseListActivity<DatabaseHelper>
   implements ActionBar.OnNavigationListener, 
-             LoaderManager.LoaderCallbacks<Cursor>,
-             AdapterView.OnItemClickListener {
+             LoaderManager.LoaderCallbacks<Cursor> {
 
   private final String TAG = getClass().getName();
 
@@ -60,7 +60,7 @@ public class LibraryActivity
     }
   }
 
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+  protected void onListItemClick (ListView l, View v, int position, long id) {
     SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(position);
     String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
     Log.d(TAG, "clicked on book id: " + book_id);
@@ -130,7 +130,6 @@ public class LibraryActivity
     setListAdapter(mCursorAdapter);
     getLoaderManager().initLoader(0, null, this);
 
-    getListView().setOnItemClickListener(this);
     registerForContextMenu(getListView());
   }
 
