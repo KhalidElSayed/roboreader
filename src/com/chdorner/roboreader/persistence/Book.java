@@ -18,7 +18,7 @@ public class Book {
 
   @DatabaseField(id = true, columnName = "_id")
   private String identifier;
-  public static final String FIELD_IDENTIFIER = "identifier";
+  public static final String FIELD_IDENTIFIER = "_id";
 
   @DatabaseField
   private String title;
