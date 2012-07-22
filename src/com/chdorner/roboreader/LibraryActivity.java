@@ -61,7 +61,7 @@ public class LibraryActivity
   }
 
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    SQLiteCursor cursor = (SQLiteCursor)parent.getAdapter().getItem(position);
+    SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(position);
     String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
     Log.d(TAG, "clicked on book id: " + book_id);
   }
@@ -70,7 +70,7 @@ public class LibraryActivity
     if(v.getId() == android.R.id.list) {
       AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
-      SQLiteCursor cursor = (SQLiteCursor)LibraryActivity.this.getListView().getAdapter().getItem(info.position);
+      SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(info.position);
       String book_title = cursor.getString(cursor.getColumnIndex(Book.FIELD_TITLE));
       menu.setHeaderTitle(book_title);
 
