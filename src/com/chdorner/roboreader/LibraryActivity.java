@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Loader;
 import android.util.Log;
 import android.net.Uri;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -54,6 +56,21 @@ public class LibraryActivity
     Intent intent = getIntent();
     if("application/epub+zip".equals(getIntent().getType())) {
       importEPUB(this, intent);
+    }
+  }
+
+  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    if(v.getId() == android.R.id.list) {
+      AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+
+      SQLiteCursor cursor = (SQLiteCursor)LibraryActivity.this.getListView().getAdapter().getItem(info.position);
+      String book_title = cursor.getString(cursor.getColumnIndex(Book.FIELD_TITLE));
+      menu.setHeaderTitle(book_title);
+
+      String[] menuItems = getResources().getStringArray(R.array.library_book_list_context_menu);
+      for(String menuItem : menuItems) {
+        menu.add(menuItem);
+      }
     }
   }
 
@@ -109,10 +126,12 @@ public class LibraryActivity
     getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SQLiteCursor cursor = (SQLiteCursor)parent.getAdapter().getItem(position);
-        String book_id = cursor.getString(cursor.getColumnIndex("_id"));
+        String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
         Log.d(TAG, "clicked on book id: " + book_id);
       }
     });
+
+    registerForContextMenu(getListView());
   }
 
   private void importEPUB(Context context, Intent intent) {
