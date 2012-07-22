@@ -10,6 +10,7 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import android.util.Log;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -102,6 +105,14 @@ public class LibraryActivity
         0);
     setListAdapter(mCursorAdapter);
     getLoaderManager().initLoader(0, null, this);
+
+    getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SQLiteCursor cursor = (SQLiteCursor)parent.getAdapter().getItem(position);
+        String book_id = cursor.getString(cursor.getColumnIndex("_id"));
+        Log.d(TAG, "clicked on book id: " + book_id);
+      }
+    });
   }
 
   private void importEPUB(Context context, Intent intent) {
