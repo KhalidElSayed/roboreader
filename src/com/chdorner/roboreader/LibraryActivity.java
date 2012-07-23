@@ -22,8 +22,10 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -74,11 +76,16 @@ public class LibraryActivity
       String book_title = cursor.getString(cursor.getColumnIndex(Book.FIELD_TITLE));
       menu.setHeaderTitle(book_title);
 
-      String[] menuItems = getResources().getStringArray(R.array.library_book_list_context_menu);
-      for(String menuItem : menuItems) {
-        menu.add(menuItem);
-      }
+      new MenuInflater(this).inflate(R.menu.library_book_list_context_menu, menu);
     }
+  }
+
+  public boolean onContextItemSelected (MenuItem item) {
+    if(item.getItemId() == R.id.delete_book) {
+      int position = ((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position;
+      SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(position);
+    }
+    return true;
   }
 
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {

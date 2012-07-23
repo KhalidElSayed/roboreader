@@ -5,8 +5,5 @@
     <item>@string/book_state_finished</item>
     <item>@string/book_state_abandoned</item>
   </array>
-  <array name="library_book_list_context_menu">
-    <item>@string/delete</item>
-  </array>
 </resources>
 
