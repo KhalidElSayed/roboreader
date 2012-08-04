@@ -14,7 +14,7 @@ public class MD5 {
       byte messageDigest[] = digest.digest();
 
       StringBuffer hexString = new StringBuffer();
-      for (int i=0; i<messageDigest.length; i++) {
+      for (int i = 0; i < messageDigest.length; i++) {
         hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
       }
 
@@ -22,8 +22,7 @@ public class MD5 {
     } catch (NoSuchAlgorithmException e) {
       Log.e(TAG, e.getMessage());
     }
-    
+
     return "";
   }
 }
-

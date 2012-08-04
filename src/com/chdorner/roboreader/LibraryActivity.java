@@ -32,18 +32,24 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
+import com.j256.ormlite.dao.Dao;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class LibraryActivity
-  extends OrmLiteBaseListActivity<DatabaseHelper>
-  implements ActionBar.OnNavigationListener, 
-             LoaderManager.LoaderCallbacks<Cursor> {
+import nl.siegmann.epublib.epub.EpubReader;
+import nl.siegmann.epublib.domain.Resources;
+import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.Spine;
+
+public class LibraryActivity extends OrmLiteBaseListActivity<DatabaseHelper>
+    implements ActionBar.OnNavigationListener,
+    LoaderManager.LoaderCallbacks<Cursor> {
 
   private final String TAG = getClass().getName();
 
@@ -52,38 +58,68 @@ public class LibraryActivity
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.library);
+    setContentView(R.layout.activity_library);
     setupActionBar();
     setupListView();
 
     Intent intent = getIntent();
-    if("application/epub+zip".equals(getIntent().getType())) {
+    if ("application/epub+zip".equals(getIntent().getType())) {
       importEPUB(this, intent);
     }
   }
 
-  protected void onListItemClick (ListView l, View v, int position, long id) {
-    SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(position);
-    String book_id = cursor.getString(cursor.getColumnIndex(Book.FIELD_IDENTIFIER));
+  protected void onListItemClick(ListView l, View v, int position, long id) {
+    SQLiteCursor cursor = (SQLiteCursor) getListAdapter().getItem(position);
+    String book_id = cursor.getString(cursor
+        .getColumnIndex(Book.FIELD_IDENTIFIER));
     Log.d(TAG, "clicked on book id: " + book_id);
-  }
 
-  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-    if(v.getId() == android.R.id.list) {
-      AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+    try {
+      Dao<Book, String> bookDao = getHelper().getBookDao();
+      Book book = bookDao.queryForId(book_id);
 
-      SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(info.position);
-      String book_title = cursor.getString(cursor.getColumnIndex(Book.FIELD_TITLE));
-      menu.setHeaderTitle(book_title);
+      InputStream inputStream = new FileInputStream(book.getEPUBFile(this));
+      EpubReader reader = new EpubReader();
+      nl.siegmann.epublib.domain.Book epubBook = reader.readEpub(inputStream);
 
-      new MenuInflater(this).inflate(R.menu.library_book_list_context_menu, menu);
+      Resources resources = epubBook.getResources();
+      Spine spine = epubBook.getSpine();
+
+      int spineSize = spine.size();
+      Log.d(TAG, "spineSize: " + spineSize);
+      for (int i = 0; i < spineSize; i++) {
+        Resource resource = spine.getResource(i);
+        Log.d(TAG, "id: " + resource.getId());
+        Log.d(TAG, "title: " + resource.getTitle());
+        Log.d(TAG, "mediaType: " + resource.getMediaType().getName());
+        Log.d(TAG, "***");
+      }
+
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
     }
   }
 
-  public boolean onContextItemSelected (MenuItem item) {
-    if(item.getItemId() == R.id.delete_book) {
-      int position = ((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position;
-      SQLiteCursor cursor = (SQLiteCursor)getListAdapter().getItem(position);
+  public void onCreateContextMenu(ContextMenu menu, View v,
+      ContextMenuInfo menuInfo) {
+    if (v.getId() == android.R.id.list) {
+      AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+      SQLiteCursor cursor = (SQLiteCursor) getListAdapter().getItem(
+          info.position);
+      String book_title = cursor.getString(cursor
+          .getColumnIndex(Book.FIELD_TITLE));
+      menu.setHeaderTitle(book_title);
+
+      new MenuInflater(this).inflate(R.menu.library_book_list_context_menu,
+          menu);
+    }
+  }
+
+  public boolean onContextItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.delete_book) {
+      int position = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+      SQLiteCursor cursor = (SQLiteCursor) getListAdapter().getItem(position);
     }
     return true;
   }
@@ -91,9 +127,11 @@ public class LibraryActivity
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     int selectedIndex = getActionBar().getSelectedNavigationIndex();
     int state = Book.STATE_READING;
-    switch(selectedIndex) {
-      case Book.STATE_FINISHED: state = Book.STATE_FINISHED;
-      case Book.STATE_ABANDONED: state = Book.STATE_ABANDONED;
+    switch (selectedIndex) {
+    case Book.STATE_FINISHED:
+      state = Book.STATE_FINISHED;
+    case Book.STATE_ABANDONED:
+      state = Book.STATE_ABANDONED;
     }
     return new LibraryBookCursorLoader(state, this, getHelper());
   }
@@ -110,7 +148,7 @@ public class LibraryActivity
     getLoaderManager().restartLoader(0, null, this);
   }
 
-  public boolean onNavigationItemSelected (int itemPosition, long itemId) {
+  public boolean onNavigationItemSelected(int itemPosition, long itemId) {
     updateListViewData();
     return true;
   }
@@ -120,20 +158,18 @@ public class LibraryActivity
     bar.setDisplayShowTitleEnabled(false);
     bar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-    ArrayAdapter<CharSequence> bookStates = ArrayAdapter.createFromResource(this, R.array.book_states, android.R.layout.simple_dropdown_item_1line);
-    bookStates.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    ArrayAdapter<CharSequence> bookStates = ArrayAdapter.createFromResource(
+        this, R.array.book_states, android.R.layout.simple_dropdown_item_1line);
+    bookStates
+        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     bar.setListNavigationCallbacks(bookStates, this);
   }
 
   private void setupListView() {
-    String[] fromColumns = {Book.FIELD_TITLE, Book.FIELD_AUTHOR};
-    int[] toViews = {R.id.book_title, R.id.book_author};
+    String[] fromColumns = { Book.FIELD_TITLE, Book.FIELD_AUTHOR };
+    int[] toViews = { R.id.book_title, R.id.book_author };
     mCursorAdapter = new SimpleCursorAdapter(this,
-        R.layout.library_book_list_item,
-        null,
-        fromColumns,
-        toViews,
-        0);
+        R.layout.list_item_library_book, null, fromColumns, toViews, 0);
     setListAdapter(mCursorAdapter);
     getLoaderManager().initLoader(0, null, this);
 
@@ -141,14 +177,15 @@ public class LibraryActivity
   }
 
   private void importEPUB(Context context, Intent intent) {
-    if(!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-      Toast.makeText(context, "Cannot import Book at the moment", Toast.LENGTH_LONG).show();
+    if (!Environment.MEDIA_MOUNTED
+        .equals(Environment.getExternalStorageState())) {
+      Toast.makeText(context, "Cannot import Book at the moment",
+          Toast.LENGTH_LONG).show();
       return;
     }
 
     Toast.makeText(context, "Importing book...", Toast.LENGTH_SHORT).show();
-    RoboReaderApplication application = (RoboReaderApplication)getApplication();
+    RoboReaderApplication application = (RoboReaderApplication) getApplication();
     new ImportEPUBTask(this).execute(intent.getData());
   }
 }
-

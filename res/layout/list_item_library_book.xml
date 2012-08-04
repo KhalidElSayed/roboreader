@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TwoLineListItem xmlns:android="http://schemas.android.com/apk/res/android" 
+<TwoLineListItem
+  xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:minHeight="?android:attr/listPreferredItemHeight"
   android:mode="twoLine">
-
-  <TextView android:id="@+id/book_title"
+  <TextView
+    android:id="@+id/book_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
@@ -13,8 +14,8 @@
     android:textAppearance="?android:attr/textAppearanceListItem"
     android:lines="1"
     android:ellipsize="end" />
-
-  <TextView android:id="@+id/book_author"
+  <TextView
+    android:id="@+id/book_author"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_below="@id/book_title"
@@ -23,4 +24,3 @@
     android:lines="1"
     android:ellipsize="end" />
 </TwoLineListItem>
-

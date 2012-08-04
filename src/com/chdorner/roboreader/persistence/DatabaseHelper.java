@@ -27,20 +27,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     Log.d(TAG, "onCreate");
     try {
       TableUtils.createTable(connectionSource, Book.class);
-    } catch(SQLException e) {
+    } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+  public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
+      int oldVersion, int newVersion) {
     Log.d(TAG, "onUpgrade");
   }
 
   public Dao<Book, String> getBookDao() throws SQLException {
-    if(mBookDao == null) {
+    if (mBookDao == null) {
       this.mBookDao = getDao(Book.class);
     }
     return mBookDao;
   }
 }
-

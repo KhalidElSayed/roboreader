@@ -19,7 +19,8 @@ public class LibraryBookCursorLoader extends SimpleCursorLoader {
   private DatabaseHelper mDatabaseHelper;
   private int mBookState;
 
-  public LibraryBookCursorLoader(int bookState, Context context, DatabaseHelper helper) {
+  public LibraryBookCursorLoader(int bookState, Context context,
+      DatabaseHelper helper) {
     super(context);
     this.mDatabaseHelper = helper;
     this.mBookState = bookState;
@@ -35,15 +36,16 @@ public class LibraryBookCursorLoader extends SimpleCursorLoader {
 
       PreparedQuery<Book> preparedQuery = queryBuilder.prepare();
 
-      AndroidCompiledStatement compiledStatement = (AndroidCompiledStatement)preparedQuery.compile(mDatabaseHelper.getConnectionSource().getReadOnlyConnection(), StatementType.SELECT);
+      AndroidCompiledStatement compiledStatement = (AndroidCompiledStatement) preparedQuery
+          .compile(mDatabaseHelper.getConnectionSource()
+              .getReadOnlyConnection(), StatementType.SELECT);
 
       cursor = compiledStatement.getCursor();
       cursor.getCount();
-    } catch(SQLException e) {
+    } catch (SQLException e) {
       e.printStackTrace();
     }
 
     return cursor;
   }
 }
-

@@ -60,18 +60,19 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
       bookDao.create(book);
 
       databaseHelper.close();
-    } catch(IOException e) {
+    } catch (IOException e) {
       Log.e(TAG, e.getMessage());
-    } catch(SQLException e) {
+    } catch (SQLException e) {
       Log.e(TAG, e.getMessage());
     }
     return STATE_OK;
   }
 
   private void copyFile(Uri uri, Book book, File outputFile) throws IOException {
-    Log.d(TAG, "Writing to "+outputFile.getPath());
+    Log.d(TAG, "Writing to " + outputFile.getPath());
 
-    InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+    InputStream inputStream = mContext.getContentResolver()
+        .openInputStream(uri);
     OutputStream outputStream = new FileOutputStream(outputFile);
 
     byte[] data = new byte[inputStream.available()];
@@ -93,7 +94,7 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
 
   private String buildAuthorString(Metadata metadata) {
     ArrayList<String> authors = new ArrayList<String>();
-    for(Author author : metadata.getAuthors()) {
+    for (Author author : metadata.getAuthors()) {
       String authorName = author.getFirstname() + " " + author.getLastname();
       authors.add(authorName);
     }
@@ -105,4 +106,3 @@ public class ImportEPUBTask extends AsyncTask<Uri, Intent, Integer> {
     return metadata.getTitles().get(0);
   }
 }
-

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">RoboReader</string>
-
   <string name="delete">Delete</string>
-
   <string name="book_state_reading">Reading</string>
   <string name="book_state_finished">Finished</string>
   <string name="book_state_abandoned">Abandoned</string>

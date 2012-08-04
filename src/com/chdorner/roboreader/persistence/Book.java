@@ -45,7 +45,7 @@ public class Book {
   }
 
   public void generateIdentifier(String salt) {
-    if(salt == null) {
+    if (salt == null) {
       salt = "";
     }
     this.identifier = MD5.hexdigest(salt + new Date().toString());
@@ -75,4 +75,3 @@ public class Book {
     this.author = author;
   }
 }
-
